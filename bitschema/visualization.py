@@ -41,6 +41,8 @@ def format_constraints(layout: FieldLayout) -> str:
         - Boolean: "-"
         - Integer: "[min..max]"
         - Enum: "N values"
+        - Date: "min_date..max_date (resolution)"
+        - Bitmask: "N flags: flag1, flag2, ..."
         - Nullable: adds " (nullable)" suffix
 
     Examples:
@@ -66,6 +68,16 @@ def format_constraints(layout: FieldLayout) -> str:
     elif layout.type == "enum":
         value_count = len(layout.constraints["values"])
         constraint_str = f"{value_count} values"
+    elif layout.type == "date":
+        min_date = layout.constraints.get("min_date", "")
+        max_date = layout.constraints.get("max_date", "")
+        resolution = layout.constraints.get("resolution", "")
+        constraint_str = f"{min_date}..{max_date} ({resolution})"
+    elif layout.type == "bitmask":
+        flags = layout.constraints.get("flags", {})
+        num_flags = len(flags)
+        flag_names = ", ".join(flags.keys())
+        constraint_str = f"{num_flags} flags: {flag_names}"
     else:
         constraint_str = "-"
 
