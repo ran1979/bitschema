@@ -4,6 +4,8 @@
 
 BitSchema automatically derives optimal bit-level layouts for structured data and packs them into single 64-bit integers. Define your fields via JSON/YAML, and BitSchema generates type-safe Python dataclasses with encode/decode methods—zero tolerance for overflow, no silent truncation, no guessing.
 
+![Local Screenshot](images/bitschema.png)
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-356%20passing-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
