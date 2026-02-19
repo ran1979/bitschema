@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Data packing must be mathematically correct and deterministic - no silent truncation, no overflow, no guessing
-**Current focus:** Phase 1: Foundation
+**Current focus:** Phase 2: Runtime Encoding
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation)
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-02-19 — Completed 01-05-PLAN.md (Output schema generation and integration)
+Phase: 2 of 4 (Runtime Encoding)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2026-02-19 — Completed 02-01-PLAN.md (Nullable field support)
 
-Progress: [██████████] 100% (5/5 phase 1 plans complete)
+Progress: [██████░░░░] 60% (6/10 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 4.4min
-- Total execution time: 0.37 hours
+- Total plans completed: 6
+- Average duration: 4.0min
+- Total execution time: 0.40 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | 22min | 4.4min |
+| 02-runtime-encoding | 1/? | 2min | 2.0min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min), 01-02 (4min), 01-03 (5min), 01-04 (7min), 01-05 (4min)
-- Trend: Foundation phase complete with consistent velocity
+- Last 5 plans: 01-02 (4min), 01-03 (5min), 01-04 (7min), 01-05 (4min), 02-01 (2min)
+- Trend: Phase 2 starting strong with TDD velocity
 
 *Updated after each plan completion*
 
@@ -74,6 +75,11 @@ Recent decisions affecting current work:
 - Integration tests: Permanent fixtures instead of creating/deleting to avoid test ordering issues
 - Output schema structure: {version, total_bits, fields[{name, type, offset, bits, constraints}]}
 
+**From 02-01 (Nullable Field Support):**
+- Presence bit included in FieldLayout.bits: Added to total count, not tracked separately
+- nullable defaults to False in layout: Uses field.get("nullable", False) for backward compatibility
+- FieldLayout.nullable tracking: Added to NamedTuple to enable encoder/decoder presence bit handling
+
 ### Pending Todos
 
 None yet.
@@ -84,8 +90,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T11:49:08Z
-Stopped at: Completed 01-05-PLAN.md (Output Schema Generation and Integration) - 1 TDD task (2 commits: test, feat)
+Last session: 2026-02-19T12:22:23Z
+Stopped at: Completed 02-01-PLAN.md (Nullable Field Support) - 1 TDD task (2 commits: test, feat)
 Resume file: None
 
-**Phase 1 Foundation COMPLETE** - Ready for Phase 2: Code Generation
+**Phase 1 Foundation COMPLETE** - Phase 2 Runtime Encoding in progress
