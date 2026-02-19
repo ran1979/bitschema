@@ -5,6 +5,7 @@ Implements bit extraction, denormalization, and nullable field handling.
 """
 
 from typing import Any
+from datetime import datetime, timedelta
 
 from .layout import FieldLayout
 
@@ -55,6 +56,25 @@ def denormalize_value(extracted: int, layout: FieldLayout) -> Any:
         # Convert index to enum value
         values = layout.constraints["values"]
         return values[extracted]
+
+    elif layout.type == "date":
+        min_date_str = layout.constraints["min_date"]
+        min_date = datetime.fromisoformat(min_date_str)
+        resolution = layout.constraints["resolution"]
+
+        # Calculate datetime by adding offset to min_date
+        if resolution == "day":
+            result = (min_date + timedelta(days=extracted)).date()
+        elif resolution == "hour":
+            result = min_date + timedelta(hours=extracted)
+        elif resolution == "minute":
+            result = min_date + timedelta(minutes=extracted)
+        elif resolution == "second":
+            result = min_date + timedelta(seconds=extracted)
+        else:
+            raise ValueError(f"Invalid date resolution: {resolution}")
+
+        return result
 
     else:
         # Should never happen if layout is valid

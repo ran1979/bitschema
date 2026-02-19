@@ -5,6 +5,7 @@ Uses Pydantic v2 for runtime validation with Zod-like schema generation.
 """
 
 from typing import Literal, Annotated
+from datetime import datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
@@ -134,8 +135,47 @@ class EnumFieldDefinition(BaseModel):
         return (len(self.values) - 1).bit_length()
 
 
+class DateFieldDefinition(BaseModel):
+    """Date/datetime field definition with configurable resolution.
+
+    Attributes:
+        type: Must be "date"
+        resolution: Time resolution (day, hour, minute, second)
+        min_date: Minimum date in ISO 8601 format
+        max_date: Maximum date in ISO 8601 format
+        nullable: Whether field can be null (adds presence bit)
+        description: Optional field description
+    """
+
+    type: Literal["date"] = "date"
+    resolution: Literal["day", "hour", "minute", "second"]
+    min_date: str = Field(description="Minimum date (ISO 8601)")
+    max_date: str = Field(description="Maximum date (ISO 8601)")
+    nullable: bool = Field(default=False, description="Allow null values")
+    description: str | None = Field(default=None, description="Field description")
+
+    @field_validator("min_date", "max_date")
+    @classmethod
+    def validate_iso_date(cls, v: str) -> str:
+        """Validate ISO 8601 date format."""
+        try:
+            datetime.fromisoformat(v)
+            return v
+        except ValueError as e:
+            raise ValueError(f"Invalid ISO 8601 date: {v}") from e
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> "DateFieldDefinition":
+        """Validate min_date is before max_date."""
+        min_dt = datetime.fromisoformat(self.min_date)
+        max_dt = datetime.fromisoformat(self.max_date)
+        if min_dt >= max_dt:
+            raise ValueError("min_date must be before max_date")
+        return self
+
+
 # Union type for all field definitions
-FieldDefinition = IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition
+FieldDefinition = IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition
 
 
 class BitSchema(BaseModel):
@@ -149,7 +189,7 @@ class BitSchema(BaseModel):
 
     version: Literal["1"] = "1"
     name: Annotated[str, Field(min_length=1, pattern=r'^[A-Za-z_][A-Za-z0-9_]*$')]
-    fields: dict[str, IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition]
+    fields: dict[str, IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition]
 
     @field_validator("name")
     @classmethod
@@ -184,6 +224,19 @@ class BitSchema(BaseModel):
                 total_bits += 1
             elif isinstance(field_def, EnumFieldDefinition):
                 total_bits += field_def.bits_required
+            elif isinstance(field_def, DateFieldDefinition):
+                # Calculate date field bits based on resolution
+                min_dt = datetime.fromisoformat(field_def.min_date)
+                max_dt = datetime.fromisoformat(field_def.max_date)
+                if field_def.resolution == "day":
+                    total_units = (max_dt - min_dt).days
+                elif field_def.resolution == "hour":
+                    total_units = int((max_dt - min_dt).total_seconds() / 3600)
+                elif field_def.resolution == "minute":
+                    total_units = int((max_dt - min_dt).total_seconds() / 60)
+                elif field_def.resolution == "second":
+                    total_units = int((max_dt - min_dt).total_seconds())
+                total_bits += (total_units - 1).bit_length() if total_units > 0 else 0
 
             # Add presence bit if nullable
             if field_def.nullable:
@@ -207,6 +260,19 @@ class BitSchema(BaseModel):
                 total += 1
             elif isinstance(field_def, EnumFieldDefinition):
                 total += field_def.bits_required
+            elif isinstance(field_def, DateFieldDefinition):
+                # Calculate date field bits based on resolution
+                min_dt = datetime.fromisoformat(field_def.min_date)
+                max_dt = datetime.fromisoformat(field_def.max_date)
+                if field_def.resolution == "day":
+                    total_units = (max_dt - min_dt).days
+                elif field_def.resolution == "hour":
+                    total_units = int((max_dt - min_dt).total_seconds() / 3600)
+                elif field_def.resolution == "minute":
+                    total_units = int((max_dt - min_dt).total_seconds() / 60)
+                elif field_def.resolution == "second":
+                    total_units = int((max_dt - min_dt).total_seconds())
+                total += (total_units - 1).bit_length() if total_units > 0 else 0
 
             if field_def.nullable:
                 total += 1

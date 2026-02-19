@@ -5,6 +5,7 @@ bit count stays within 64-bit limit. Core mathematical correctness guarantee.
 """
 
 from typing import NamedTuple
+from datetime import datetime
 
 from .errors import SchemaError
 
@@ -79,6 +80,26 @@ def compute_field_bits(field: dict) -> int:
         max_index = len(values) - 1
         return max_index.bit_length()
 
+    elif field_type == "date":
+        min_dt = datetime.fromisoformat(field["min_date"])
+        max_dt = datetime.fromisoformat(field["max_date"])
+        resolution = field["resolution"]
+
+        # Calculate total units based on resolution
+        if resolution == "day":
+            total_units = (max_dt - min_dt).days
+        elif resolution == "hour":
+            total_units = int((max_dt - min_dt).total_seconds() / 3600)
+        elif resolution == "minute":
+            total_units = int((max_dt - min_dt).total_seconds() / 60)
+        elif resolution == "second":
+            total_units = int((max_dt - min_dt).total_seconds())
+        else:
+            raise SchemaError(f"Invalid date resolution: {resolution}")
+
+        # Return bits needed to represent range
+        return (total_units - 1).bit_length() if total_units > 0 else 0
+
     else:
         raise SchemaError(f"Unknown field type: {field_type}")
 
@@ -145,6 +166,12 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
             constraints = {"min": field["min"], "max": field["max"]}
         elif field["type"] == "enum":
             constraints = {"values": field["values"]}
+        elif field["type"] == "date":
+            constraints = {
+                "min_date": field["min_date"],
+                "max_date": field["max_date"],
+                "resolution": field["resolution"]
+            }
 
         # Create layout with current offset
         layout = FieldLayout(

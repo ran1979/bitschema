@@ -6,6 +6,7 @@ with presence bit tracking.
 """
 
 from typing import Any
+from datetime import datetime, date
 
 from .layout import FieldLayout
 from .validator import validate_data
@@ -56,6 +57,32 @@ def normalize_value(value: Any, layout: FieldLayout) -> int:
         # Convert to index in values list
         values = layout.constraints["values"]
         return values.index(value)
+
+    elif layout.type == "date":
+        min_date_str = layout.constraints["min_date"]
+        min_date = datetime.fromisoformat(min_date_str)
+        resolution = layout.constraints["resolution"]
+
+        # Parse input value if it's a string
+        if isinstance(value, str):
+            value = datetime.fromisoformat(value)
+        # Convert date to datetime for consistent handling
+        elif isinstance(value, date) and not isinstance(value, datetime):
+            value = datetime.combine(value, datetime.min.time())
+
+        # Calculate offset based on resolution
+        if resolution == "day":
+            offset = (value - min_date).days
+        elif resolution == "hour":
+            offset = int((value - min_date).total_seconds() / 3600)
+        elif resolution == "minute":
+            offset = int((value - min_date).total_seconds() / 60)
+        elif resolution == "second":
+            offset = int((value - min_date).total_seconds())
+        else:
+            raise ValueError(f"Invalid date resolution: {resolution}")
+
+        return offset
 
     else:
         raise ValueError(f"Unknown field type: {layout.type}")
