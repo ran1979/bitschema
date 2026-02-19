@@ -11,7 +11,4 @@ fields:
     max: 120
   status:
     type: enum
-    values:
-      - new
-      - active
-      - archived
+    values: ["new", "active", "archived"]

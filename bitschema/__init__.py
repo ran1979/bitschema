@@ -21,6 +21,15 @@ from .loader import (
     schema_to_dict,
 )
 
+# File parsing
+from .parser import parse_schema_file
+
+# Bit layout computation
+from .layout import compute_bit_layout, FieldLayout
+
+# Output generation
+from .output import generate_output_schema
+
 # Exceptions
 from .errors import ValidationError, SchemaError
 
@@ -40,6 +49,13 @@ __all__ = [
     "schema_from_dict",
     "schema_to_json",
     "schema_to_dict",
+    # File parsing
+    "parse_schema_file",
+    # Layout computation
+    "compute_bit_layout",
+    "FieldLayout",
+    # Output generation
+    "generate_output_schema",
     # Exceptions
     "ValidationError",
     "SchemaError",

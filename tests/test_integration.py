@@ -61,64 +61,42 @@ def test_json_file_to_output_schema():
 
 def test_yaml_file_to_output_schema():
     """Full pipeline: YAML file → parsed schema → layout → output."""
-    # Create YAML fixture
+    # Use existing YAML fixture (matches valid_schema.json)
     yaml_path = Path("tests/fixtures/valid_schema.yaml")
-    yaml_content = """version: "1"
-name: UserFlags
-fields:
-  active:
-    type: bool
-  age:
-    type: int
-    bits: 7
-    signed: false
-    min: 0
-    max: 120
-  status:
-    type: enum
-    values: ["new", "active", "archived"]
-"""
-    yaml_path.write_text(yaml_content)
 
-    try:
-        # Step 1: Parse YAML schema file
-        schema = parse_schema_file(yaml_path)
-        assert isinstance(schema, BitSchema)
-        assert schema.name == "UserFlags"
+    # Step 1: Parse YAML schema file
+    schema = parse_schema_file(yaml_path)
+    assert isinstance(schema, BitSchema)
+    assert schema.name == "UserFlags"
 
-        # Step 2: Compute layout
-        fields_dict = []
-        for name, field_def in schema.fields.items():
-            field_dict = {"name": name}
-            if isinstance(field_def, BoolFieldDefinition):
-                field_dict["type"] = "boolean"
-            elif isinstance(field_def, IntFieldDefinition):
-                field_dict.update({
-                    "type": "integer",
-                    "min": field_def.min,
-                    "max": field_def.max
-                })
-            elif isinstance(field_def, EnumFieldDefinition):
-                field_dict.update({
-                    "type": "enum",
-                    "values": field_def.values
-                })
-            fields_dict.append(field_dict)
+    # Step 2: Compute layout
+    fields_dict = []
+    for name, field_def in schema.fields.items():
+        field_dict = {"name": name}
+        if isinstance(field_def, BoolFieldDefinition):
+            field_dict["type"] = "boolean"
+        elif isinstance(field_def, IntFieldDefinition):
+            field_dict.update({
+                "type": "integer",
+                "min": field_def.min,
+                "max": field_def.max
+            })
+        elif isinstance(field_def, EnumFieldDefinition):
+            field_dict.update({
+                "type": "enum",
+                "values": field_def.values
+            })
+        fields_dict.append(field_dict)
 
-        layouts, total_bits = compute_bit_layout(fields_dict)
+    layouts, total_bits = compute_bit_layout(fields_dict)
 
-        # Step 3: Generate output
-        output = generate_output_schema(schema, layouts, total_bits)
+    # Step 3: Generate output
+    output = generate_output_schema(schema, layouts, total_bits)
 
-        # Verify output matches JSON version
-        assert output["version"] == "1"
-        assert output["total_bits"] == total_bits
-        assert len(output["fields"]) == 3
-
-    finally:
-        # Cleanup
-        if yaml_path.exists():
-            yaml_path.unlink()
+    # Verify output matches JSON version
+    assert output["version"] == "1"
+    assert output["total_bits"] == total_bits
+    assert len(output["fields"]) == 3
 
 
 def test_pipeline_field_names_preserved():
