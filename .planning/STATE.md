@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 1 of 4 (Foundation)
-Plan: 3 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-19 — Completed 01-03-PLAN.md (Bit layout computation)
+Last activity: 2026-02-19 — Completed 01-02-PLAN.md (Schema validation integration)
 
 Progress: [████░░░░░░] 40% (2/5 phase 1 plans complete)
 
@@ -20,18 +20,18 @@ Progress: [████░░░░░░] 40% (2/5 phase 1 plans complete)
 
 **Velocity:**
 - Total plans completed: 2
-- Average duration: 2min
-- Total execution time: 0.07 hours
+- Average duration: 3min
+- Total execution time: 0.10 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2/5 | 4min | 2min |
+| 01-foundation | 2/5 | 6min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min), 01-03 (2min)
-- Trend: Consistent velocity
+- Last 5 plans: 01-01 (2min), 01-02 (4min)
+- Trend: Building momentum
 
 *Updated after each plan completion*
 
@@ -55,10 +55,12 @@ Recent decisions affecting current work:
 - Structured exceptions with attributes: Enables programmatic error handling
 - hypothesis for property-based testing: Critical for bit-packing edge cases
 
-**From 01-03 (Bit Layout Computation):**
-- int.bit_length() over math.log2(): Avoids float precision issues for bit calculations
-- Single-value enums = 0 bits: Constant values waste no space
-- Per-field breakdown in error messages: Easier debugging of 64-bit overflow
+**From 01-02 (Schema Validation Integration):**
+- Pydantic v2 for validation: Zod-like declarative validation with Python type hints
+- Validate min/max fit bit range at load: Fail-fast prevents impossible runtime scenarios
+- Enum bits = (len(values)-1).bit_length(): Mathematical correctness, avoids float precision
+- Support JSON and YAML: JSON for machines, YAML for humans (PyYAML optional)
+- Validate 64-bit total at schema level: Core constraint enforced before code generation
 
 ### Pending Todos
 
@@ -70,6 +72,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T11:31:14Z
-Stopped at: Completed 01-03-PLAN.md (Bit Layout Computation) - 1 TDD task (2 commits: RED + GREEN)
+Last session: 2026-02-19T11:33:54Z
+Stopped at: Completed 01-02-PLAN.md (Schema Validation Integration) - 3 tasks (3 commits: feat, test, docs)
 Resume file: None
