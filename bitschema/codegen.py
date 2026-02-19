@@ -90,6 +90,35 @@ def generate_field_definitions(schema: BitSchema) -> str:
     return "\n".join(lines)
 
 
+def _generate_normalize_expression(field_name: str, field_def: FieldDefinition) -> str:
+    """Generate normalization expression for a field value.
+
+    Args:
+        field_name: Name of the field
+        field_def: Field definition with type and constraints
+
+    Returns:
+        Python expression string that normalizes the field value
+
+    Examples:
+        >>> _generate_normalize_expression("active", BoolFieldDefinition(type="bool"))
+        '1 if self.active else 0'
+    """
+    if isinstance(field_def, BoolFieldDefinition):
+        return f"1 if self.{field_name} else 0"
+    elif isinstance(field_def, IntFieldDefinition):
+        min_value = field_def.min if field_def.min is not None else 0
+        if min_value != 0:
+            return f"self.{field_name} - {min_value}"
+        else:
+            return f"self.{field_name}"
+    elif isinstance(field_def, EnumFieldDefinition):
+        values_repr = repr(field_def.values)
+        return f"{values_repr}.index(self.{field_name})"
+    else:
+        raise ValueError(f"Unknown field type: {type(field_def)}")
+
+
 def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str:
     """Generate encode() method using LSB-first accumulator pattern.
 
@@ -129,19 +158,7 @@ def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
             lines.append(f"        accumulator |= 1 << {layout.offset}")
 
             # Generate normalization logic for value
-            if isinstance(field_def, BoolFieldDefinition):
-                normalize_expr = f"1 if self.{field_name} else 0"
-            elif isinstance(field_def, IntFieldDefinition):
-                min_value = field_def.min if field_def.min is not None else 0
-                if min_value != 0:
-                    normalize_expr = f"self.{field_name} - {min_value}"
-                else:
-                    normalize_expr = f"self.{field_name}"
-            elif isinstance(field_def, EnumFieldDefinition):
-                values_repr = repr(field_def.values)
-                normalize_expr = f"{values_repr}.index(self.{field_name})"
-            else:
-                raise ValueError(f"Unknown field type: {type(field_def)}")
+            normalize_expr = _generate_normalize_expression(field_name, field_def)
 
             # Pack value at offset+1
             value_bits = layout.bits - 1
@@ -153,20 +170,7 @@ def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
             lines.append("")
         else:
             # Non-nullable field: normalize and pack directly
-            if isinstance(field_def, BoolFieldDefinition):
-                normalize_expr = f"1 if self.{field_name} else 0"
-            elif isinstance(field_def, IntFieldDefinition):
-                min_value = field_def.min if field_def.min is not None else 0
-                if min_value != 0:
-                    normalize_expr = f"self.{field_name} - {min_value}"
-                else:
-                    normalize_expr = f"self.{field_name}"
-            elif isinstance(field_def, EnumFieldDefinition):
-                values_repr = repr(field_def.values)
-                normalize_expr = f"{values_repr}.index(self.{field_name})"
-            else:
-                raise ValueError(f"Unknown field type: {type(field_def)}")
-
+            normalize_expr = _generate_normalize_expression(field_name, field_def)
             lines.append(f"    normalized = {normalize_expr}")
 
             # Create mask and pack
@@ -178,6 +182,37 @@ def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
     lines.append("    return accumulator")
 
     return "\n".join(lines)
+
+
+def _generate_denormalize_statements(
+    field_name: str, field_def: FieldDefinition, indent: str = "    "
+) -> list[str]:
+    """Generate denormalization statements for a field value.
+
+    Args:
+        field_name: Name of the field
+        field_def: Field definition with type and constraints
+        indent: Indentation prefix for generated statements
+
+    Returns:
+        List of Python statement strings that denormalize the extracted value
+
+    Note:
+        Assumes 'extracted' variable contains the raw bit value.
+    """
+    if isinstance(field_def, BoolFieldDefinition):
+        return [f"{indent}{field_name}_value = bool(extracted)"]
+    elif isinstance(field_def, IntFieldDefinition):
+        min_value = field_def.min if field_def.min is not None else 0
+        if min_value != 0:
+            return [f"{indent}{field_name}_value = extracted + {min_value}"]
+        else:
+            return [f"{indent}{field_name}_value = extracted"]
+    elif isinstance(field_def, EnumFieldDefinition):
+        values_repr = repr(field_def.values)
+        return [f"{indent}{field_name}_value = {values_repr}[extracted]"]
+    else:
+        raise ValueError(f"Unknown field type: {type(field_def)}")
 
 
 def generate_decode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str:
@@ -223,19 +258,8 @@ def generate_decode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
             if value_bits > 0:
                 mask = (1 << value_bits) - 1
                 lines.append(f"        extracted = (encoded >> {value_offset}) & {mask}")
-
                 # Denormalize
-                if isinstance(field_def, BoolFieldDefinition):
-                    lines.append(f"        {field_name}_value = bool(extracted)")
-                elif isinstance(field_def, IntFieldDefinition):
-                    min_value = field_def.min if field_def.min is not None else 0
-                    if min_value != 0:
-                        lines.append(f"        {field_name}_value = extracted + {min_value}")
-                    else:
-                        lines.append(f"        {field_name}_value = extracted")
-                elif isinstance(field_def, EnumFieldDefinition):
-                    values_repr = repr(field_def.values)
-                    lines.append(f"        {field_name}_value = {values_repr}[extracted]")
+                lines.extend(_generate_denormalize_statements(field_name, field_def, "        "))
             else:
                 lines.append(f"        {field_name}_value = True")  # Boolean with 0 value bits
 
@@ -245,19 +269,8 @@ def generate_decode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
             if layout.bits > 0:
                 mask = (1 << layout.bits) - 1
                 lines.append(f"    extracted = (encoded >> {layout.offset}) & {mask}")
-
                 # Denormalize
-                if isinstance(field_def, BoolFieldDefinition):
-                    lines.append(f"    {field_name}_value = bool(extracted)")
-                elif isinstance(field_def, IntFieldDefinition):
-                    min_value = field_def.min if field_def.min is not None else 0
-                    if min_value != 0:
-                        lines.append(f"    {field_name}_value = extracted + {min_value}")
-                    else:
-                        lines.append(f"    {field_name}_value = extracted")
-                elif isinstance(field_def, EnumFieldDefinition):
-                    values_repr = repr(field_def.values)
-                    lines.append(f"    {field_name}_value = {values_repr}[extracted]")
+                lines.extend(_generate_denormalize_statements(field_name, field_def, "    "))
             else:
                 # Zero bits means constant value
                 if isinstance(field_def, EnumFieldDefinition):
