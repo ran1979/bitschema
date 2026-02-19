@@ -39,6 +39,9 @@ from .encoder import encode, normalize_value
 # Decoding
 from .decoder import decode, denormalize_value
 
+# Code generation
+from .codegen import generate_dataclass_code
+
 # JSON Schema export
 from .jsonschema import generate_json_schema
 
@@ -86,6 +89,8 @@ __all__ = [
     # Decoding
     "decode",
     "denormalize_value",
+    # Code generation
+    "generate_dataclass_code",
     # JSON Schema export
     "generate_json_schema",
     # Visualization

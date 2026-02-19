@@ -153,7 +153,7 @@ class TestEncodeMethodGeneration:
             version="1",
             name="Temperature",
             fields={
-                "temp": IntFieldDefinition(type="int", bits=8, min=-50, max=50)
+                "temp": IntFieldDefinition(type="int", bits=8, signed=True, min=-50, max=50)
             },
         )
         layouts, _ = compute_bit_layout(
@@ -234,7 +234,7 @@ class TestDecodeMethodGeneration:
             version="1",
             name="Temperature",
             fields={
-                "temp": IntFieldDefinition(type="int", bits=8, min=-50, max=50)
+                "temp": IntFieldDefinition(type="int", bits=8, signed=True, min=-50, max=50)
             },
         )
         layouts, _ = compute_bit_layout(
