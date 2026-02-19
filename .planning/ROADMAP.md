@@ -48,10 +48,14 @@ Plans:
   3. Developer can decode 64-bit integer back to Python dict using same schema
   4. Round-trip correctness verified for all field types (encode then decode returns original values)
   5. Nullable fields work correctly with None values encoded using presence bits
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- TBD during plan-phase
+- [ ] 02-01-PLAN.md — Nullable field support in schema models (TDD)
+- [ ] 02-02-PLAN.md — Runtime validation module with EncodingError (TDD)
+- [ ] 02-03-PLAN.md — Bit-packing encoder with LSB-first accumulator (TDD)
+- [ ] 02-04-PLAN.md — Bit-unpacking decoder with extraction logic (TDD)
+- [ ] 02-05-PLAN.md — Round-trip tests with Hypothesis property-based testing (TDD)
 
 ### Phase 3: Code Generation
 **Goal**: Developers can generate static Python dataclasses with type-safe encode/decode methods
@@ -91,6 +95,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|-----------|-----------|
 | 1. Foundation | 5/5 | Complete ✓ | 2026-02-19 |
-| 2. Runtime Encoding | 0/TBD | Not started | - |
+| 2. Runtime Encoding | 0/5 | Not started | - |
 | 3. Code Generation | 0/TBD | Not started | - |
 | 4. Testing & Advanced Types | 0/TBD | Not started | - |
