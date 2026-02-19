@@ -85,10 +85,13 @@ Plans:
   3. Developer can use date fields with configurable resolution and range constraints
   4. Developer can use bitmask fields for multiple boolean flags
   5. Generated code and runtime encoding produce identical results for all test cases
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- TBD during plan-phase
+- [ ] 04-01-PLAN.md — Comprehensive test suite with Hypothesis (boundary conditions, nullable combinations)
+- [ ] 04-02-PLAN.md — Date field support TDD (day/hour/minute/second resolution with range constraints)
+- [ ] 04-03-PLAN.md — Bitmask field support TDD (multiple boolean flags with position validation)
+- [ ] 04-04-PLAN.md — Code generation for advanced types and equivalence testing
 
 ## Progress
 
@@ -100,4 +103,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 5/5 | Complete ✓ | 2026-02-19 |
 | 2. Runtime Encoding | 5/5 | Complete ✓ | 2026-02-19 |
 | 3. Code Generation | 4/4 | Complete ✓ | 2026-02-19 |
-| 4. Testing & Advanced Types | 0/TBD | Not started | - |
+| 4. Testing & Advanced Types | 0/4 | Not started | - |
