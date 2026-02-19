@@ -33,6 +33,12 @@ from .output import generate_output_schema
 # Runtime validation
 from .validator import validate_data, validate_field_value
 
+# Encoding
+from .encoder import encode, normalize_value
+
+# Decoding
+from .decoder import decode, denormalize_value
+
 # Exceptions
 from .errors import ValidationError, SchemaError, EncodingError
 
@@ -62,6 +68,9 @@ __all__ = [
     # Runtime validation
     "validate_data",
     "validate_field_value",
+    # Encoding
+    "encode",
+    "normalize_value",
     # Exceptions
     "ValidationError",
     "SchemaError",
