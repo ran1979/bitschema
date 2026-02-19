@@ -232,3 +232,93 @@ def test_field_layout_structure():
     assert layout.offset == 0
     assert layout.bits == 7  # 0..100 requires 7 bits (101 values)
     assert isinstance(layout.constraints, dict)
+
+
+# Test nullable field presence bit tracking (TYPE-06)
+
+
+def test_nullable_boolean_adds_presence_bit():
+    """Nullable boolean field requires 2 bits (1 presence + 1 value)."""
+    fields = [{"name": "flag", "type": "boolean", "nullable": True}]
+    layouts, total_bits = compute_bit_layout(fields)
+
+    assert len(layouts) == 1
+    assert layouts[0].bits == 2  # 1 for presence + 1 for value
+    assert total_bits == 2
+
+
+def test_non_nullable_boolean_no_presence_bit():
+    """Non-nullable boolean field requires only 1 bit."""
+    fields = [{"name": "flag", "type": "boolean", "nullable": False}]
+    layouts, total_bits = compute_bit_layout(fields)
+
+    assert len(layouts) == 1
+    assert layouts[0].bits == 1  # Only value bit, no presence bit
+    assert total_bits == 1
+
+
+def test_nullable_integer_adds_presence_bit():
+    """Nullable integer field adds 1 bit for presence tracking."""
+    # 0..127 requires 7 bits, + 1 presence bit = 8 total
+    fields = [{"name": "age", "type": "integer", "min": 0, "max": 127, "nullable": True}]
+    layouts, total_bits = compute_bit_layout(fields)
+
+    assert len(layouts) == 1
+    assert layouts[0].bits == 8  # 7 for value + 1 for presence
+    assert total_bits == 8
+
+
+def test_nullable_enum_adds_presence_bit():
+    """Nullable enum field adds 1 bit for presence tracking."""
+    # 3 values require 2 bits, + 1 presence bit = 3 total
+    fields = [{"name": "status", "type": "enum", "values": ["a", "b", "c"], "nullable": True}]
+    layouts, total_bits = compute_bit_layout(fields)
+
+    assert len(layouts) == 1
+    assert layouts[0].bits == 3  # 2 for enum + 1 for presence
+    assert total_bits == 3
+
+
+def test_mixed_nullable_and_non_nullable_fields():
+    """Schema with mix of nullable and non-nullable fields calculates correctly."""
+    fields = [
+        {"name": "id", "type": "integer", "min": 0, "max": 255, "nullable": False},  # 8 bits
+        {"name": "active", "type": "boolean", "nullable": True},  # 2 bits (1 + 1)
+        {"name": "score", "type": "integer", "min": 0, "max": 100, "nullable": True},  # 8 bits (7 + 1)
+    ]
+    layouts, total_bits = compute_bit_layout(fields)
+
+    assert len(layouts) == 3
+    assert layouts[0].bits == 8  # id: 8 bits (no presence bit)
+    assert layouts[1].bits == 2  # active: 1 value + 1 presence
+    assert layouts[2].bits == 8  # score: 7 value + 1 presence
+    assert total_bits == 18  # 8 + 2 + 8
+
+
+def test_nullable_flag_in_field_layout():
+    """FieldLayout should track nullable flag."""
+    fields = [{"name": "value", "type": "boolean", "nullable": True}]
+    layouts, _ = compute_bit_layout(fields)
+
+    assert hasattr(layouts[0], "nullable")
+    assert layouts[0].nullable is True
+
+
+def test_64_bit_limit_includes_presence_bits():
+    """64-bit limit validation should include presence bits."""
+    # 8 fields of 8 bits each = 64 bits (no presence bits)
+    fields = [
+        {"name": f"field{i}", "type": "integer", "min": 0, "max": 255, "nullable": False}
+        for i in range(8)
+    ]
+    layouts, total_bits = compute_bit_layout(fields)
+    assert total_bits == 64  # Should succeed
+
+    # Now add nullable to one field -> 65 bits total (should fail)
+    fields[0]["nullable"] = True
+    with pytest.raises(SchemaError) as exc_info:
+        compute_bit_layout(fields)
+
+    error = exc_info.value
+    assert "exceeds 64-bit limit" in error.message.lower()
+    assert "65 bits" in error.message
