@@ -129,58 +129,58 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCHEMA-01 | TBD | Pending |
-| SCHEMA-02 | TBD | Pending |
-| SCHEMA-03 | TBD | Pending |
-| SCHEMA-04 | TBD | Pending |
-| SCHEMA-05 | TBD | Pending |
-| TYPE-01 | TBD | Pending |
-| TYPE-02 | TBD | Pending |
-| TYPE-03 | TBD | Pending |
-| TYPE-04 | TBD | Pending |
-| TYPE-05 | TBD | Pending |
-| TYPE-06 | TBD | Pending |
-| TYPE-07 | TBD | Pending |
-| TYPE-08 | TBD | Pending |
-| TYPE-09 | TBD | Pending |
-| LAYOUT-01 | TBD | Pending |
-| LAYOUT-02 | TBD | Pending |
-| LAYOUT-03 | TBD | Pending |
-| LAYOUT-04 | TBD | Pending |
-| LAYOUT-05 | TBD | Pending |
-| OUTPUT-01 | TBD | Pending |
-| OUTPUT-02 | TBD | Pending |
-| OUTPUT-03 | TBD | Pending |
-| OUTPUT-04 | TBD | Pending |
-| OUTPUT-05 | TBD | Pending |
-| ENCODE-01 | TBD | Pending |
-| ENCODE-02 | TBD | Pending |
-| ENCODE-03 | TBD | Pending |
-| ENCODE-04 | TBD | Pending |
-| ENCODE-05 | TBD | Pending |
-| ENCODE-06 | TBD | Pending |
-| DECODE-01 | TBD | Pending |
-| DECODE-02 | TBD | Pending |
-| DECODE-03 | TBD | Pending |
-| DECODE-04 | TBD | Pending |
-| DECODE-05 | TBD | Pending |
-| CODEGEN-01 | TBD | Pending |
-| CODEGEN-02 | TBD | Pending |
-| CODEGEN-03 | TBD | Pending |
-| CODEGEN-04 | TBD | Pending |
-| CODEGEN-05 | TBD | Pending |
-| CODEGEN-06 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| TEST-04 | TBD | Pending |
-| TEST-05 | TBD | Pending |
+| SCHEMA-01 | Phase 1 | Pending |
+| SCHEMA-02 | Phase 1 | Pending |
+| SCHEMA-03 | Phase 1 | Pending |
+| SCHEMA-04 | Phase 1 | Pending |
+| SCHEMA-05 | Phase 1 | Pending |
+| TYPE-01 | Phase 1 | Pending |
+| TYPE-02 | Phase 1 | Pending |
+| TYPE-03 | Phase 1 | Pending |
+| TYPE-04 | Phase 1 | Pending |
+| TYPE-05 | Phase 1 | Pending |
+| TYPE-06 | Phase 2 | Pending |
+| TYPE-07 | Phase 4 | Pending |
+| TYPE-08 | Phase 4 | Pending |
+| TYPE-09 | Phase 4 | Pending |
+| LAYOUT-01 | Phase 1 | Pending |
+| LAYOUT-02 | Phase 1 | Pending |
+| LAYOUT-03 | Phase 1 | Pending |
+| LAYOUT-04 | Phase 1 | Pending |
+| LAYOUT-05 | Phase 1 | Pending |
+| OUTPUT-01 | Phase 1 | Pending |
+| OUTPUT-02 | Phase 1 | Pending |
+| OUTPUT-03 | Phase 1 | Pending |
+| OUTPUT-04 | Phase 3 | Pending |
+| OUTPUT-05 | Phase 3 | Pending |
+| ENCODE-01 | Phase 2 | Pending |
+| ENCODE-02 | Phase 2 | Pending |
+| ENCODE-03 | Phase 2 | Pending |
+| ENCODE-04 | Phase 2 | Pending |
+| ENCODE-05 | Phase 2 | Pending |
+| ENCODE-06 | Phase 2 | Pending |
+| DECODE-01 | Phase 2 | Pending |
+| DECODE-02 | Phase 2 | Pending |
+| DECODE-03 | Phase 2 | Pending |
+| DECODE-04 | Phase 2 | Pending |
+| DECODE-05 | Phase 2 | Pending |
+| CODEGEN-01 | Phase 3 | Pending |
+| CODEGEN-02 | Phase 3 | Pending |
+| CODEGEN-03 | Phase 3 | Pending |
+| CODEGEN-04 | Phase 3 | Pending |
+| CODEGEN-05 | Phase 3 | Pending |
+| CODEGEN-06 | Phase 3 | Pending |
+| TEST-01 | Phase 4 | Pending |
+| TEST-02 | Phase 4 | Pending |
+| TEST-03 | Phase 4 | Pending |
+| TEST-04 | Phase 4 | Pending |
+| TEST-05 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 46 total
-- Mapped to phases: 0 (roadmap not yet created)
-- Unmapped: 46 ⚠️
+- Mapped to phases: 46 (100% coverage)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after initial definition*
+*Last updated: 2026-02-19 after roadmap creation*
