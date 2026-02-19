@@ -14,6 +14,8 @@ from .models import (
     BoolFieldDefinition,
     IntFieldDefinition,
     EnumFieldDefinition,
+    DateFieldDefinition,
+    BitmaskFieldDefinition,
     FieldDefinition,
 )
 from .layout import FieldLayout
@@ -45,6 +47,14 @@ def generate_field_type_hint(field_name: str, field_def: FieldDefinition) -> str
         type_hint = "int"
     elif isinstance(field_def, EnumFieldDefinition):
         type_hint = "str"
+    elif isinstance(field_def, DateFieldDefinition):
+        # day resolution returns date, others return datetime
+        if field_def.resolution == "day":
+            type_hint = "datetime.date"
+        else:
+            type_hint = "datetime.datetime"
+    elif isinstance(field_def, BitmaskFieldDefinition):
+        type_hint = "dict[str, bool]"
     else:
         raise ValueError(f"Unknown field type: {type(field_def)}")
 
@@ -115,8 +125,46 @@ def _generate_normalize_expression(field_name: str, field_def: FieldDefinition) 
     elif isinstance(field_def, EnumFieldDefinition):
         values_repr = repr(field_def.values)
         return f"{values_repr}.index(self.{field_name})"
+    elif isinstance(field_def, DateFieldDefinition):
+        # Date normalization is more complex - handled inline in encode method
+        return None  # Signal to use inline code block
+    elif isinstance(field_def, BitmaskFieldDefinition):
+        # Bitmask normalization is more complex - handled inline in encode method
+        return None  # Signal to use inline code block
     else:
         raise ValueError(f"Unknown field type: {type(field_def)}")
+
+
+def _generate_date_encoding_inline(lines: list[str], field_name: str, field_def: DateFieldDefinition, indent: str) -> None:
+    """Generate inline date encoding logic."""
+    min_date = field_def.min_date
+    resolution = field_def.resolution
+
+    lines.append(f'{indent}min_date = datetime.fromisoformat("{min_date}")')
+    lines.append(f'{indent}value = self.{field_name}')
+    lines.append(f'{indent}# Convert date to datetime for consistent handling')
+    lines.append(f'{indent}if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):')
+    lines.append(f'{indent}    value = datetime.datetime.combine(value, datetime.datetime.min.time())')
+
+    if resolution == "day":
+        lines.append(f'{indent}normalized = (value - min_date).days')
+    elif resolution == "hour":
+        lines.append(f'{indent}normalized = int((value - min_date).total_seconds() / 3600)')
+    elif resolution == "minute":
+        lines.append(f'{indent}normalized = int((value - min_date).total_seconds() / 60)')
+    elif resolution == "second":
+        lines.append(f'{indent}normalized = int((value - min_date).total_seconds())')
+
+
+def _generate_bitmask_encoding_inline(lines: list[str], field_name: str, field_def: BitmaskFieldDefinition, indent: str) -> None:
+    """Generate inline bitmask encoding logic."""
+    flags_repr = repr(field_def.flags)
+
+    lines.append(f'{indent}flags_def = {flags_repr}')
+    lines.append(f'{indent}normalized = 0')
+    lines.append(f'{indent}for flag_name, flag_position in flags_def.items():')
+    lines.append(f'{indent}    if self.{field_name}.get(flag_name, False):')
+    lines.append(f'{indent}        normalized |= (1 << flag_position)')
 
 
 def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str:
@@ -165,13 +213,31 @@ def generate_encode_method(schema: BitSchema, layouts: list[FieldLayout]) -> str
             if value_bits > 0:
                 mask = (1 << value_bits) - 1
                 lines.append(f"        # Value bits at offset {layout.offset + 1}")
-                lines.append(f"        normalized = {normalize_expr}")
-                lines.append(f"        accumulator |= (normalized & {mask}) << {layout.offset + 1}")
+
+                if normalize_expr is None:
+                    # Complex normalization - handle inline
+                    if isinstance(field_def, DateFieldDefinition):
+                        _generate_date_encoding_inline(lines, field_name, field_def, "        ")
+                        lines.append(f"        accumulator |= (normalized & {mask}) << {layout.offset + 1}")
+                    elif isinstance(field_def, BitmaskFieldDefinition):
+                        _generate_bitmask_encoding_inline(lines, field_name, field_def, "        ")
+                        lines.append(f"        accumulator |= (normalized & {mask}) << {layout.offset + 1}")
+                else:
+                    lines.append(f"        normalized = {normalize_expr}")
+                    lines.append(f"        accumulator |= (normalized & {mask}) << {layout.offset + 1}")
             lines.append("")
         else:
             # Non-nullable field: normalize and pack directly
             normalize_expr = _generate_normalize_expression(field_name, field_def)
-            lines.append(f"    normalized = {normalize_expr}")
+
+            if normalize_expr is None:
+                # Complex normalization - handle inline
+                if isinstance(field_def, DateFieldDefinition):
+                    _generate_date_encoding_inline(lines, field_name, field_def, "    ")
+                elif isinstance(field_def, BitmaskFieldDefinition):
+                    _generate_bitmask_encoding_inline(lines, field_name, field_def, "    ")
+            else:
+                lines.append(f"    normalized = {normalize_expr}")
 
             # Create mask and pack
             if layout.bits > 0:
@@ -211,6 +277,29 @@ def _generate_denormalize_statements(
     elif isinstance(field_def, EnumFieldDefinition):
         values_repr = repr(field_def.values)
         return [f"{indent}{field_name}_value = {values_repr}[extracted]"]
+    elif isinstance(field_def, DateFieldDefinition):
+        min_date = field_def.min_date
+        resolution = field_def.resolution
+        statements = [
+            f'{indent}min_date = datetime.fromisoformat("{min_date}")',
+        ]
+        if resolution == "day":
+            statements.append(f'{indent}{field_name}_value = (min_date + datetime.timedelta(days=extracted)).date()')
+        elif resolution == "hour":
+            statements.append(f'{indent}{field_name}_value = min_date + datetime.timedelta(hours=extracted)')
+        elif resolution == "minute":
+            statements.append(f'{indent}{field_name}_value = min_date + datetime.timedelta(minutes=extracted)')
+        elif resolution == "second":
+            statements.append(f'{indent}{field_name}_value = min_date + datetime.timedelta(seconds=extracted)')
+        return statements
+    elif isinstance(field_def, BitmaskFieldDefinition):
+        flags_repr = repr(field_def.flags)
+        return [
+            f'{indent}flags_def = {flags_repr}',
+            f'{indent}{field_name}_value = {{}}',
+            f'{indent}for flag_name, flag_position in flags_def.items():',
+            f'{indent}    {field_name}_value[flag_name] = bool(extracted & (1 << flag_position))',
+        ]
     else:
         raise ValueError(f"Unknown field type: {type(field_def)}")
 
@@ -318,6 +407,13 @@ def generate_dataclass_code(schema: BitSchema, layouts: list[FieldLayout]) -> st
                 constraints_str = f" ({field_def.min} to {field_def.max})"
         elif isinstance(field_def, EnumFieldDefinition):
             constraints_str = f" (values: {', '.join(field_def.values[:3])}{'...' if len(field_def.values) > 3 else ''})"
+        elif isinstance(field_def, DateFieldDefinition):
+            constraints_str = f" ({field_def.min_date}..{field_def.max_date}, {field_def.resolution})"
+        elif isinstance(field_def, BitmaskFieldDefinition):
+            flag_names = ', '.join(list(field_def.flags.keys())[:3])
+            if len(field_def.flags) > 3:
+                flag_names += '...'
+            constraints_str = f" (flags: {flag_names})"
         field_list.append(f"    {layout.name}: {type_hint}{constraints_str}")
 
     field_list_str = "\n".join(field_list)
@@ -333,6 +429,11 @@ Fields ({total_bits} bits total):
 
     # Imports
     imports = "from dataclasses import dataclass"
+
+    # Check if we need datetime imports
+    has_date_field = any(isinstance(schema.fields[layout.name], DateFieldDefinition) for layout in layouts)
+    if has_date_field:
+        imports += "\nimport datetime"
 
     # Class definition
     class_lines = []
