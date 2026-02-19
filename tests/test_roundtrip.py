@@ -5,7 +5,7 @@ Uses Hypothesis to automatically generate edge cases and field combinations.
 """
 
 import pytest
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings
 
 from bitschema import encode, decode, FieldLayout
 
@@ -13,6 +13,7 @@ from bitschema import encode, decode, FieldLayout
 class TestRoundTripSingleField:
     """Round-trip tests for individual field types."""
 
+    @settings(max_examples=500)
     @given(st.booleans())
     def test_boolean_field_roundtrip(self, value):
         """Boolean field round-trips correctly for True/False."""
@@ -33,6 +34,7 @@ class TestRoundTripSingleField:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.integers(min_value=0, max_value=255))
     def test_unsigned_int_field_roundtrip(self, value):
         """Unsigned integer field round-trips correctly across full range."""
@@ -53,6 +55,7 @@ class TestRoundTripSingleField:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.integers(min_value=-128, max_value=127))
     def test_signed_int_field_roundtrip(self, value):
         """Signed integer field round-trips correctly with negative values."""
@@ -73,6 +76,7 @@ class TestRoundTripSingleField:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.sampled_from(["idle", "active", "error", "done"]))
     def test_enum_field_roundtrip(self, value):
         """Enum field round-trips correctly for all enum values."""
@@ -97,6 +101,7 @@ class TestRoundTripSingleField:
 class TestRoundTripNullableFields:
     """Round-trip tests for nullable fields."""
 
+    @settings(max_examples=500)
     @given(st.none() | st.booleans())
     def test_nullable_boolean_roundtrip(self, value):
         """Nullable boolean round-trips correctly for None, True, False."""
@@ -117,6 +122,7 @@ class TestRoundTripNullableFields:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.none() | st.integers(min_value=0, max_value=100))
     def test_nullable_int_roundtrip(self, value):
         """Nullable integer round-trips correctly for None and values."""
@@ -137,6 +143,7 @@ class TestRoundTripNullableFields:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.none() | st.sampled_from(["red", "green", "blue"]))
     def test_nullable_enum_roundtrip(self, value):
         """Nullable enum round-trips correctly for None and enum values."""
@@ -161,6 +168,7 @@ class TestRoundTripNullableFields:
 class TestRoundTripMultipleFields:
     """Round-trip tests for schemas with multiple fields."""
 
+    @settings(max_examples=500)
     @given(
         st.booleans(),
         st.integers(min_value=0, max_value=127),
@@ -201,6 +209,7 @@ class TestRoundTripMultipleFields:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(
         st.booleans(),
         st.none() | st.integers(min_value=-50, max_value=50),
@@ -245,6 +254,7 @@ class TestRoundTripMultipleFields:
 class TestRoundTripEdgeCases:
     """Round-trip tests for edge cases and boundaries."""
 
+    @settings(max_examples=500)
     @given(
         st.integers(min_value=0, max_value=255),
         st.integers(min_value=0, max_value=255),
@@ -303,6 +313,7 @@ class TestRoundTripEdgeCases:
 
         assert decoded == original
 
+    @settings(max_examples=500)
     @given(st.integers(min_value=-1000, max_value=1000))
     def test_negative_range_roundtrip(self, value):
         """Negative integer ranges round-trip correctly."""
@@ -391,6 +402,276 @@ class TestRoundTripEdgeCases:
         encoded = encode(original, layouts)
         decoded = decode(encoded, layouts)
 
+        assert decoded == original
+
+
+class TestMultiFieldEdgeCases:
+    """Edge case combinations for multi-field schemas."""
+
+    @settings(max_examples=500)
+    @given(
+        st.booleans(),
+        st.integers(min_value=0, max_value=255),
+        st.sampled_from(["a", "b", "c", "d"]),
+    )
+    def test_all_fields_at_min_values(self, flag, int_val, enum_val):
+        """All fields at minimum values encode/decode correctly."""
+        layouts = [
+            FieldLayout(
+                name="flag",
+                type="boolean",
+                offset=0,
+                bits=1,
+                constraints={},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="int_field",
+                type="integer",
+                offset=1,
+                bits=8,
+                constraints={"min": 0, "max": 255},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="enum_field",
+                type="enum",
+                offset=9,
+                bits=2,
+                constraints={"values": ["a", "b", "c", "d"]},
+                nullable=False,
+            ),
+        ]
+
+        # Test with minimum values
+        original_min = {"flag": False, "int_field": 0, "enum_field": "a"}
+        encoded = encode(original_min, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_min
+
+        # Test with random values
+        original_random = {"flag": flag, "int_field": int_val, "enum_field": enum_val}
+        encoded = encode(original_random, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_random
+
+    @settings(max_examples=500)
+    @given(
+        st.booleans(),
+        st.integers(min_value=0, max_value=255),
+        st.sampled_from(["a", "b", "c", "d"]),
+    )
+    def test_all_fields_at_max_values(self, flag, int_val, enum_val):
+        """All fields at maximum values encode/decode correctly."""
+        layouts = [
+            FieldLayout(
+                name="flag",
+                type="boolean",
+                offset=0,
+                bits=1,
+                constraints={},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="int_field",
+                type="integer",
+                offset=1,
+                bits=8,
+                constraints={"min": 0, "max": 255},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="enum_field",
+                type="enum",
+                offset=9,
+                bits=2,
+                constraints={"values": ["a", "b", "c", "d"]},
+                nullable=False,
+            ),
+        ]
+
+        # Test with maximum values
+        original_max = {"flag": True, "int_field": 255, "enum_field": "d"}
+        encoded = encode(original_max, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_max
+
+        # Test with random values
+        original_random = {"flag": flag, "int_field": int_val, "enum_field": enum_val}
+        encoded = encode(original_random, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_random
+
+    @settings(max_examples=500)
+    @given(
+        st.integers(min_value=-100, max_value=100),
+        st.integers(min_value=0, max_value=255),
+    )
+    def test_alternating_min_max_values(self, field1_val, field2_val):
+        """Alternating min/max values across fields."""
+        layouts = [
+            FieldLayout(
+                name="field1",
+                type="integer",
+                offset=0,
+                bits=8,
+                constraints={"min": -100, "max": 100},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="field2",
+                type="integer",
+                offset=8,
+                bits=8,
+                constraints={"min": 0, "max": 255},
+                nullable=False,
+            ),
+        ]
+
+        # Test min-max pattern
+        original_min_max = {"field1": -100, "field2": 255}
+        encoded = encode(original_min_max, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_min_max
+
+        # Test max-min pattern
+        original_max_min = {"field1": 100, "field2": 0}
+        encoded = encode(original_max_min, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_max_min
+
+        # Test random values
+        original_random = {"field1": field1_val, "field2": field2_val}
+        encoded = encode(original_random, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original_random
+
+
+class TestNullableStressTests:
+    """Stress tests for nullable field patterns."""
+
+    @settings(max_examples=500)
+    @given(st.booleans())
+    def test_all_nullable_fields_none(self, flag):
+        """All nullable fields set to None simultaneously."""
+        layouts = [
+            FieldLayout(
+                name="flag",
+                type="boolean",
+                offset=0,
+                bits=1,
+                constraints={},
+                nullable=False,
+            ),
+            FieldLayout(
+                name="opt1",
+                type="integer",
+                offset=1,
+                bits=8,
+                constraints={"min": 0, "max": 100},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt2",
+                type="enum",
+                offset=9,
+                bits=3,
+                constraints={"values": ["a", "b", "c"]},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt3",
+                type="boolean",
+                offset=12,
+                bits=2,
+                constraints={},
+                nullable=True,
+            ),
+        ]
+
+        original = {"flag": flag, "opt1": None, "opt2": None, "opt3": None}
+        encoded = encode(original, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original
+
+    @settings(max_examples=500)
+    @given(
+        st.integers(min_value=0, max_value=100),
+        st.sampled_from(["a", "b", "c"]),
+        st.booleans(),
+    )
+    def test_all_nullable_fields_present(self, int_val, enum_val, bool_val):
+        """All nullable fields with present values."""
+        layouts = [
+            FieldLayout(
+                name="opt1",
+                type="integer",
+                offset=0,
+                bits=8,
+                constraints={"min": 0, "max": 100},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt2",
+                type="enum",
+                offset=8,
+                bits=3,
+                constraints={"values": ["a", "b", "c"]},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt3",
+                type="boolean",
+                offset=11,
+                bits=2,
+                constraints={},
+                nullable=True,
+            ),
+        ]
+
+        original = {"opt1": int_val, "opt2": enum_val, "opt3": bool_val}
+        encoded = encode(original, layouts)
+        decoded = decode(encoded, layouts)
+        assert decoded == original
+
+    @settings(max_examples=500)
+    @given(
+        st.none() | st.integers(min_value=0, max_value=100),
+        st.none() | st.sampled_from(["a", "b", "c"]),
+        st.none() | st.booleans(),
+    )
+    def test_random_nullable_patterns(self, opt1, opt2, opt3):
+        """Random patterns of None/present across nullable fields."""
+        layouts = [
+            FieldLayout(
+                name="opt1",
+                type="integer",
+                offset=0,
+                bits=8,
+                constraints={"min": 0, "max": 100},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt2",
+                type="enum",
+                offset=8,
+                bits=3,
+                constraints={"values": ["a", "b", "c"]},
+                nullable=True,
+            ),
+            FieldLayout(
+                name="opt3",
+                type="boolean",
+                offset=11,
+                bits=2,
+                constraints={},
+                nullable=True,
+            ),
+        ]
+
+        original = {"opt1": opt1, "opt2": opt2, "opt3": opt3}
+        encoded = encode(original, layouts)
+        decoded = decode(encoded, layouts)
         assert decoded == original
 
 
