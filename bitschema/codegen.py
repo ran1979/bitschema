@@ -140,7 +140,7 @@ def _generate_date_encoding_inline(lines: list[str], field_name: str, field_def:
     min_date = field_def.min_date
     resolution = field_def.resolution
 
-    lines.append(f'{indent}min_date = datetime.fromisoformat("{min_date}")')
+    lines.append(f'{indent}min_date = datetime.datetime.fromisoformat("{min_date}")')
     lines.append(f'{indent}value = self.{field_name}')
     lines.append(f'{indent}# Convert date to datetime for consistent handling')
     lines.append(f'{indent}if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):')
@@ -281,7 +281,7 @@ def _generate_denormalize_statements(
         min_date = field_def.min_date
         resolution = field_def.resolution
         statements = [
-            f'{indent}min_date = datetime.fromisoformat("{min_date}")',
+            f'{indent}min_date = datetime.datetime.fromisoformat("{min_date}")',
         ]
         if resolution == "day":
             statements.append(f'{indent}{field_name}_value = (min_date + datetime.timedelta(days=extracted)).date()')
