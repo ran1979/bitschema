@@ -30,8 +30,11 @@ from .layout import compute_bit_layout, FieldLayout
 # Output generation
 from .output import generate_output_schema
 
+# Runtime validation
+from .validator import validate_data, validate_field_value
+
 # Exceptions
-from .errors import ValidationError, SchemaError
+from .errors import ValidationError, SchemaError, EncodingError
 
 __all__ = [
     # Version
@@ -56,7 +59,11 @@ __all__ = [
     "FieldLayout",
     # Output generation
     "generate_output_schema",
+    # Runtime validation
+    "validate_data",
+    "validate_field_value",
     # Exceptions
     "ValidationError",
     "SchemaError",
+    "EncodingError",
 ]
