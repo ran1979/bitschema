@@ -24,6 +24,9 @@ dev = [
     "jsonschema>=4.0.0",
 ]
 
+[project.scripts]
+bitschema = "bitschema.__main__:main"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["bitschema*"]
