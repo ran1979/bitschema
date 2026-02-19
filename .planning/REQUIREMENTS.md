@@ -129,28 +129,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCHEMA-01 | Phase 1 | Pending |
-| SCHEMA-02 | Phase 1 | Pending |
-| SCHEMA-03 | Phase 1 | Pending |
-| SCHEMA-04 | Phase 1 | Pending |
-| SCHEMA-05 | Phase 1 | Pending |
-| TYPE-01 | Phase 1 | Pending |
-| TYPE-02 | Phase 1 | Pending |
-| TYPE-03 | Phase 1 | Pending |
-| TYPE-04 | Phase 1 | Pending |
-| TYPE-05 | Phase 1 | Pending |
+| SCHEMA-01 | Phase 1 | Complete |
+| SCHEMA-02 | Phase 1 | Complete |
+| SCHEMA-03 | Phase 1 | Complete |
+| SCHEMA-04 | Phase 1 | Complete |
+| SCHEMA-05 | Phase 1 | Complete |
+| TYPE-01 | Phase 1 | Complete |
+| TYPE-02 | Phase 1 | Complete |
+| TYPE-03 | Phase 1 | Complete |
+| TYPE-04 | Phase 1 | Complete |
+| TYPE-05 | Phase 1 | Complete |
 | TYPE-06 | Phase 2 | Pending |
 | TYPE-07 | Phase 4 | Pending |
 | TYPE-08 | Phase 4 | Pending |
 | TYPE-09 | Phase 4 | Pending |
-| LAYOUT-01 | Phase 1 | Pending |
-| LAYOUT-02 | Phase 1 | Pending |
-| LAYOUT-03 | Phase 1 | Pending |
-| LAYOUT-04 | Phase 1 | Pending |
-| LAYOUT-05 | Phase 1 | Pending |
-| OUTPUT-01 | Phase 1 | Pending |
-| OUTPUT-02 | Phase 1 | Pending |
-| OUTPUT-03 | Phase 1 | Pending |
+| LAYOUT-01 | Phase 1 | Complete |
+| LAYOUT-02 | Phase 1 | Complete |
+| LAYOUT-03 | Phase 1 | Complete |
+| LAYOUT-04 | Phase 1 | Complete |
+| LAYOUT-05 | Phase 1 | Complete |
+| OUTPUT-01 | Phase 1 | Complete |
+| OUTPUT-02 | Phase 1 | Complete |
+| OUTPUT-03 | Phase 1 | Complete |
 | OUTPUT-04 | Phase 3 | Pending |
 | OUTPUT-05 | Phase 3 | Pending |
 | ENCODE-01 | Phase 2 | Pending |
@@ -179,6 +179,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 **Coverage:**
 - v1 requirements: 46 total
 - Mapped to phases: 46 (100% coverage)
+- Complete: 18 (39%)
 - Unmapped: 0
 
 ---
