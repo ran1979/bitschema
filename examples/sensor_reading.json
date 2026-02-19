@@ -1,0 +1,32 @@
+{
+  "version": "1",
+  "name": "SensorReading",
+  "fields": {
+    "temperature": {
+      "type": "int",
+      "bits": 12,
+      "signed": true,
+      "min": -2048,
+      "max": 2047
+    },
+    "humidity": {
+      "type": "int",
+      "bits": 7,
+      "signed": false,
+      "min": 0,
+      "max": 100
+    },
+    "battery_ok": {
+      "type": "bool"
+    },
+    "status": {
+      "type": "enum",
+      "values": ["ok", "warning", "error", "offline"]
+    },
+    "timestamp_offset": {
+      "type": "int",
+      "bits": 32,
+      "signed": false
+    }
+  }
+}

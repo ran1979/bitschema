@@ -1,0 +1,28 @@
+version: "1"
+name: CompactFlags
+fields:
+  feature_a_enabled:
+    type: bool
+  feature_b_enabled:
+    type: bool
+  feature_c_enabled:
+    type: bool
+  dark_mode:
+    type: bool
+  notifications:
+    type: bool
+  beta_features:
+    type: bool
+  priority:
+    type: enum
+    values:
+      - low
+      - medium
+      - high
+      - urgent
+  user_tier:
+    type: int
+    bits: 4
+    signed: false
+    min: 0
+    max: 15

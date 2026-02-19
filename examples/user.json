@@ -1,0 +1,26 @@
+{
+  "version": "1",
+  "name": "User",
+  "fields": {
+    "age": {
+      "type": "int",
+      "bits": 7,
+      "signed": false,
+      "min": 0,
+      "max": 127
+    },
+    "active": {
+      "type": "bool"
+    },
+    "role": {
+      "type": "enum",
+      "values": ["guest", "user", "admin", "superadmin"]
+    },
+    "score": {
+      "type": "int",
+      "bits": 16,
+      "signed": true,
+      "nullable": true
+    }
+  }
+}
