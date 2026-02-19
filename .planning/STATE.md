@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 1 of 4 (Foundation)
-Plan: 1 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-19 — Completed 01-01-PLAN.md (Project setup)
+Last activity: 2026-02-19 — Completed 01-03-PLAN.md (Bit layout computation)
 
-Progress: [██░░░░░░░░] 20% (1/5 phase 1 plans complete)
+Progress: [████░░░░░░] 40% (2/5 phase 1 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: 2min
-- Total execution time: 0.03 hours
+- Total execution time: 0.07 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1/5 | 2min | 2min |
+| 01-foundation | 2/5 | 4min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2min)
-- Trend: Just started
+- Last 5 plans: 01-01 (2min), 01-03 (2min)
+- Trend: Consistent velocity
 
 *Updated after each plan completion*
 
@@ -55,6 +55,11 @@ Recent decisions affecting current work:
 - Structured exceptions with attributes: Enables programmatic error handling
 - hypothesis for property-based testing: Critical for bit-packing edge cases
 
+**From 01-03 (Bit Layout Computation):**
+- int.bit_length() over math.log2(): Avoids float precision issues for bit calculations
+- Single-value enums = 0 bits: Constant values waste no space
+- Per-field breakdown in error messages: Easier debugging of 64-bit overflow
+
 ### Pending Todos
 
 None yet.
@@ -65,6 +70,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T11:27:24Z
-Stopped at: Completed 01-01-PLAN.md (Project Setup) - 2 tasks committed
+Last session: 2026-02-19T11:31:14Z
+Stopped at: Completed 01-03-PLAN.md (Bit Layout Computation) - 1 TDD task (2 commits: RED + GREEN)
 Resume file: None
