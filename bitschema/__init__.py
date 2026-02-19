@@ -71,6 +71,9 @@ __all__ = [
     # Encoding
     "encode",
     "normalize_value",
+    # Decoding
+    "decode",
+    "denormalize_value",
     # Exceptions
     "ValidationError",
     "SchemaError",
