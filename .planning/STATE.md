@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 3 of 4 (Code Generation)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-19 — Completed 03-03-PLAN.md (Bit layout visualization)
+Last activity: 2026-02-19 — Completed 03-02-PLAN.md (JSON Schema export)
 
-Progress: [███████████░░] 84% (11/13 total plans complete across all phases)
+Progress: [████████████░] 92% (12/13 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 3.0min
-- Total execution time: 0.55 hours
+- Total plans completed: 12
+- Average duration: 2.9min
+- Total execution time: 0.58 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███████████░░] 84% (11/13 total plans compl
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | 22min | 4.4min |
 | 02-runtime-encoding | 5/5 | 11.2min | 2.2min |
-| 03-code-generation | 1/3 | 2.2min | 2.2min |
+| 03-code-generation | 2/3 | 5.0min | 2.5min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (2min), 02-03 (2min), 02-04 (2.5min), 02-05 (2.7min), 03-03 (2.2min)
-- Trend: Phase 3 starting with consistent ~2min velocity
+- Last 5 plans: 02-03 (2min), 02-04 (2.5min), 02-05 (2.7min), 03-03 (2.2min), 03-02 (2.8min)
+- Trend: Phase 3 maintaining ~2.5min velocity
 
 *Updated after each plan completion*
 
@@ -111,6 +111,12 @@ Recent decisions affecting current work:
 - Constraint display format: [min..max] for integers, 'N values' for enums, human-friendly
 - Separate functions for ASCII and markdown: Allows direct format selection or convenience dispatcher
 
+**From 03-02 (JSON Schema Export):**
+- JSON Schema Draft 2020-12 as target specification: Maximum compatibility with modern tooling
+- Nullable fields use type arrays ["type", "null"]: JSON Schema standard pattern
+- Custom metadata fields (x-bitschema-*): Enables roundtrip capability and BitSchema-specific tooling
+- additionalProperties: false: Strict validation matching BitSchema behavior
+
 ### Pending Todos
 
 None yet.
@@ -121,8 +127,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T14:04:17Z
-Stopped at: Completed 03-03-PLAN.md (Bit Layout Visualization) - 1 TDD task (2 commits: test, feat)
+Last session: 2026-02-19T14:04:54Z
+Stopped at: Completed 03-02-PLAN.md (JSON Schema Export) - 1 TDD task (2 commits: test, feat)
 Resume file: None
 
-**Phase 1 Foundation COMPLETE** - **Phase 2 Runtime Encoding COMPLETE** - **Phase 3 Code Generation IN PROGRESS** (1/3 plans complete)
+**Phase 1 Foundation COMPLETE** - **Phase 2 Runtime Encoding COMPLETE** - **Phase 3 Code Generation IN PROGRESS** (2/3 plans complete)
