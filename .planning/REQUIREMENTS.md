@@ -139,7 +139,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TYPE-03 | Phase 1 | Complete |
 | TYPE-04 | Phase 1 | Complete |
 | TYPE-05 | Phase 1 | Complete |
-| TYPE-06 | Phase 2 | Pending |
+| TYPE-06 | Phase 2 | Complete |
 | TYPE-07 | Phase 4 | Pending |
 | TYPE-08 | Phase 4 | Pending |
 | TYPE-09 | Phase 4 | Pending |
@@ -153,17 +153,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OUTPUT-03 | Phase 1 | Complete |
 | OUTPUT-04 | Phase 3 | Pending |
 | OUTPUT-05 | Phase 3 | Pending |
-| ENCODE-01 | Phase 2 | Pending |
-| ENCODE-02 | Phase 2 | Pending |
-| ENCODE-03 | Phase 2 | Pending |
-| ENCODE-04 | Phase 2 | Pending |
-| ENCODE-05 | Phase 2 | Pending |
-| ENCODE-06 | Phase 2 | Pending |
-| DECODE-01 | Phase 2 | Pending |
-| DECODE-02 | Phase 2 | Pending |
-| DECODE-03 | Phase 2 | Pending |
-| DECODE-04 | Phase 2 | Pending |
-| DECODE-05 | Phase 2 | Pending |
+| ENCODE-01 | Phase 2 | Complete |
+| ENCODE-02 | Phase 2 | Complete |
+| ENCODE-03 | Phase 2 | Complete |
+| ENCODE-04 | Phase 2 | Complete |
+| ENCODE-05 | Phase 2 | Complete |
+| ENCODE-06 | Phase 2 | Complete |
+| DECODE-01 | Phase 2 | Complete |
+| DECODE-02 | Phase 2 | Complete |
+| DECODE-03 | Phase 2 | Complete |
+| DECODE-04 | Phase 2 | Complete |
+| DECODE-05 | Phase 2 | Complete |
 | CODEGEN-01 | Phase 3 | Pending |
 | CODEGEN-02 | Phase 3 | Pending |
 | CODEGEN-03 | Phase 3 | Pending |
@@ -179,9 +179,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 **Coverage:**
 - v1 requirements: 46 total
 - Mapped to phases: 46 (100% coverage)
-- Complete: 18 (39%)
+- Complete: 30 (65%)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after roadmap creation*
+*Last updated: 2026-02-19 after Phase 2 completion*

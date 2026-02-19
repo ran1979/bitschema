@@ -13,7 +13,7 @@ BitSchema delivers mathematically correct, deterministic bit-packing for Python 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Schema processing and bit manipulation primitives
-- [ ] **Phase 2: Runtime Encoding** - Full encode/decode with validation
+- [x] **Phase 2: Runtime Encoding** - Full encode/decode with validation
 - [ ] **Phase 3: Code Generation** - Static code generation and output formats
 - [ ] **Phase 4: Testing & Advanced Types** - Comprehensive testing and advanced field types
 
@@ -51,11 +51,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Nullable field support in schema models (TDD)
-- [ ] 02-02-PLAN.md — Runtime validation module with EncodingError (TDD)
-- [ ] 02-03-PLAN.md — Bit-packing encoder with LSB-first accumulator (TDD)
-- [ ] 02-04-PLAN.md — Bit-unpacking decoder with extraction logic (TDD)
-- [ ] 02-05-PLAN.md — Round-trip tests with Hypothesis property-based testing (TDD)
+- [x] 02-01-PLAN.md — Nullable field support in schema models (TDD)
+- [x] 02-02-PLAN.md — Runtime validation module with EncodingError (TDD)
+- [x] 02-03-PLAN.md — Bit-packing encoder with LSB-first accumulator (TDD)
+- [x] 02-04-PLAN.md — Bit-unpacking decoder with extraction logic (TDD)
+- [x] 02-05-PLAN.md — Round-trip tests with Hypothesis property-based testing (TDD)
 
 ### Phase 3: Code Generation
 **Goal**: Developers can generate static Python dataclasses with type-safe encode/decode methods
@@ -95,6 +95,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|-----------|-----------|
 | 1. Foundation | 5/5 | Complete ✓ | 2026-02-19 |
-| 2. Runtime Encoding | 0/5 | Not started | - |
+| 2. Runtime Encoding | 5/5 | Complete ✓ | 2026-02-19 |
 | 3. Code Generation | 0/TBD | Not started | - |
 | 4. Testing & Advanced Types | 0/TBD | Not started | - |
