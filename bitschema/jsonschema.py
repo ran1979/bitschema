@@ -9,6 +9,8 @@ from .models import (
     BoolFieldDefinition,
     IntFieldDefinition,
     EnumFieldDefinition,
+    DateFieldDefinition,
+    BitmaskFieldDefinition,
     FieldDefinition,
 )
 from .layout import FieldLayout
@@ -117,6 +119,40 @@ def _map_field_to_json_schema(field_def: FieldDefinition) -> dict:
         # Handle nullable
         if field_def.nullable:
             property_schema["type"] = ["string", "null"]
+
+        return property_schema
+
+    # Date field
+    elif isinstance(field_def, DateFieldDefinition):
+        property_schema = {
+            "type": "string",
+            "format": "date" if field_def.resolution == "day" else "date-time",
+            "x-bitschema-resolution": field_def.resolution,
+            "x-bitschema-min-date": field_def.min_date,
+            "x-bitschema-max-date": field_def.max_date,
+        }
+
+        # Handle nullable
+        if field_def.nullable:
+            property_schema["type"] = ["string", "null"]
+
+        return property_schema
+
+    # Bitmask field
+    elif isinstance(field_def, BitmaskFieldDefinition):
+        property_schema = {
+            "type": "object",
+            "properties": {
+                flag_name: {"type": "boolean"}
+                for flag_name in field_def.flags.keys()
+            },
+            "additionalProperties": False,
+            "x-bitschema-flag-positions": field_def.flags,
+        }
+
+        # Handle nullable
+        if field_def.nullable:
+            property_schema["type"] = ["object", "null"]
 
         return property_schema
 
