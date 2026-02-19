@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 4 (Runtime Encoding)
-Plan: 1 of ? in current phase
+Plan: 2 of ? in current phase
 Status: In progress
-Last activity: 2026-02-19 — Completed 02-01-PLAN.md (Nullable field support)
+Last activity: 2026-02-19 — Completed 02-02-PLAN.md (Runtime data validation)
 
-Progress: [██████░░░░] 60% (6/10 total plans complete across all phases)
+Progress: [███████░░░] 70% (7/10 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 4.0min
+- Total plans completed: 7
+- Average duration: 3.4min
 - Total execution time: 0.40 hours
 
 **By Phase:**
@@ -28,11 +28,11 @@ Progress: [██████░░░░] 60% (6/10 total plans complete across
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | 22min | 4.4min |
-| 02-runtime-encoding | 1/? | 2min | 2.0min |
+| 02-runtime-encoding | 2/? | 4min | 2.0min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (4min), 01-03 (5min), 01-04 (7min), 01-05 (4min), 02-01 (2min)
-- Trend: Phase 2 starting strong with TDD velocity
+- Last 5 plans: 01-03 (5min), 01-04 (7min), 01-05 (4min), 02-01 (2min), 02-02 (2min)
+- Trend: Phase 2 maintaining strong TDD velocity (2min per plan)
 
 *Updated after each plan completion*
 
@@ -80,6 +80,13 @@ Recent decisions affecting current work:
 - nullable defaults to False in layout: Uses field.get("nullable", False) for backward compatibility
 - FieldLayout.nullable tracking: Added to NamedTuple to enable encoder/decoder presence bit handling
 
+**From 02-02 (Runtime Data Validation):**
+- EncodingError separate from ValidationError: Encoding-specific runtime errors with field context
+- validate_data checks required fields first: Set difference for missing field detection before value validation
+- Extra fields allowed in data dict: Forward compatibility, liberal acceptance pattern
+- Nullable fields can be omitted: Treated as None, simplifies caller code
+- Boolean type check excludes bool from int: Python quirk workaround (isinstance(True, int) is True)
+
 ### Pending Todos
 
 None yet.
@@ -90,8 +97,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T12:22:23Z
-Stopped at: Completed 02-01-PLAN.md (Nullable Field Support) - 1 TDD task (2 commits: test, feat)
+Last session: 2026-02-19T12:27:08Z
+Stopped at: Completed 02-02-PLAN.md (Runtime Data Validation) - 1 TDD task (2 commits: test, feat)
 Resume file: None
 
-**Phase 1 Foundation COMPLETE** - Phase 2 Runtime Encoding in progress
+**Phase 1 Foundation COMPLETE** - Phase 2 Runtime Encoding in progress (2/? plans complete)
