@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Schema processing and bit manipulation primitives
 - [x] **Phase 2: Runtime Encoding** - Full encode/decode with validation
-- [ ] **Phase 3: Code Generation** - Static code generation and output formats
+- [x] **Phase 3: Code Generation** - Static code generation and output formats
 - [ ] **Phase 4: Testing & Advanced Types** - Comprehensive testing and advanced field types
 
 ## Phase Details
@@ -73,7 +73,7 @@ Plans:
 - [x] 03-01-PLAN.md — Dataclass code generation with encode/decode methods (TDD)
 - [x] 03-02-PLAN.md — JSON Schema Draft 2020-12 export (TDD)
 - [x] 03-03-PLAN.md — Bit layout visualization tables (TDD)
-- [ ] 03-04-PLAN.md — CLI wrapper with argparse subcommands (gap closure)
+- [x] 03-04-PLAN.md — CLI wrapper with argparse subcommands (gap closure)
 
 ### Phase 4: Testing & Advanced Types
 **Goal**: Library has comprehensive test coverage and supports advanced field types
@@ -99,5 +99,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|-----------|-----------|
 | 1. Foundation | 5/5 | Complete ✓ | 2026-02-19 |
 | 2. Runtime Encoding | 5/5 | Complete ✓ | 2026-02-19 |
-| 3. Code Generation | 0/TBD | Not started | - |
+| 3. Code Generation | 4/4 | Complete ✓ | 2026-02-19 |
 | 4. Testing & Advanced Types | 0/TBD | Not started | - |
