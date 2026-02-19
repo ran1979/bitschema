@@ -1,0 +1,20 @@
+{
+  "version": "1",
+  "name": "UserFlags",
+  "fields": {
+    "active": {
+      "type": "bool"
+    },
+    "age": {
+      "type": "int",
+      "bits": 7,
+      "signed": false,
+      "min": 0,
+      "max": 120
+    },
+    "status": {
+      "type": "enum",
+      "values": ["new", "active", "archived"]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "name": "DuplicateFields",
+  "fields": {
+    "field1": {
+      "type": "bool"
+    },
+    "field1": {
+      "type": "int",
+      "bits": 8
+    }
+  }
+}
