@@ -29,10 +29,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. System computes deterministic bit offsets for all fields in declared order
   4. System outputs JSON schema describing complete bit layout with offsets and widths
   5. System rejects schemas exceeding 64-bit limit with explanation of which fields cause overflow
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- TBD during plan-phase
+- [ ] 01-01-PLAN.md — Project setup with Pydantic, PyYAML, pytest
+- [ ] 01-02-PLAN.md — Schema models TDD (Pydantic validation)
+- [ ] 01-03-PLAN.md — Bit layout computation TDD (offset calculation)
+- [ ] 01-04-PLAN.md — Schema file parser TDD (JSON/YAML loading)
+- [ ] 01-05-PLAN.md — Schema output and integration TDD (JSON generation)
 
 ### Phase 2: Runtime Encoding
 **Goal**: Developers can encode and decode data at runtime using compiled schemas
@@ -86,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/5 | Not started | - |
 | 2. Runtime Encoding | 0/TBD | Not started | - |
 | 3. Code Generation | 0/TBD | Not started | - |
 | 4. Testing & Advanced Types | 0/TBD | Not started | - |
