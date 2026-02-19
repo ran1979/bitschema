@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 4 (Runtime Encoding)
-Plan: 3 of ? in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-19 — Completed 02-03-PLAN.md (Encoder implementation)
+Last activity: 2026-02-19 — Completed 02-04-PLAN.md (Bit-unpacking decoder)
 
-Progress: [████████░░] 80% (8/10 total plans complete across all phases)
+Progress: [█████████░] 90% (9/10 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 3.3min
-- Total execution time: 0.43 hours
+- Total plans completed: 9
+- Average duration: 3.2min
+- Total execution time: 0.48 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 5/5 | 22min | 4.4min |
-| 02-runtime-encoding | 3/? | 6min | 2.0min |
+| 02-runtime-encoding | 4/5 | 8.5min | 2.1min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (7min), 01-05 (4min), 02-01 (2min), 02-02 (2min), 02-03 (2min)
-- Trend: Phase 2 maintaining strong TDD velocity (2min per plan)
+- Last 5 plans: 01-05 (4min), 02-01 (2min), 02-02 (2min), 02-03 (2min), 02-04 (2.5min)
+- Trend: Phase 2 maintaining strong TDD velocity (~2min per plan)
 
 *Updated after each plan completion*
 
@@ -93,6 +93,11 @@ Recent decisions affecting current work:
 - Nullable presence bit placement: Bit 0 = presence, bits 1+ = value at offset+1
 - Zero-bit mask handling: (1 << 0) - 1 = 0 for single-value enums, no special case needed
 
+**From 02-04 (Bit-Unpacking Decoder):**
+- Separate denormalize_value function: Improves testability and reusability
+- Bit extraction pattern: (encoded >> offset) & mask
+- Nullable decoding: Check presence bit at offset, extract value at offset+1 if present
+
 ### Pending Todos
 
 None yet.
@@ -103,8 +108,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T12:31:38Z
-Stopped at: Completed 02-03-PLAN.md (Encoder Implementation) - 1 TDD task (2 commits: test, feat)
+Last session: 2026-02-19T12:31:39Z
+Stopped at: Completed 02-04-PLAN.md (Bit-Unpacking Decoder) - 1 TDD task (2 commits: test, feat)
 Resume file: None
 
-**Phase 1 Foundation COMPLETE** - Phase 2 Runtime Encoding in progress (3/? plans complete)
+**Phase 1 Foundation COMPLETE** - Phase 2 Runtime Encoding in progress (4/5 plans complete)
