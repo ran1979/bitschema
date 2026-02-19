@@ -5,17 +5,18 @@ Tests end-to-end workflow:
 2. Parse to BitSchema model
 3. Compute bit layout
 4. Generate output schema
+5. Encode and decode data
 """
 
 import json
 import pytest
 from pathlib import Path
 
-from bitschema import BitSchema
+from bitschema import BitSchema, encode, decode
 from bitschema.parser import parse_schema_file
 from bitschema.layout import compute_bit_layout
 from bitschema.output import generate_output_schema
-from bitschema.models import IntFieldDefinition, BoolFieldDefinition, EnumFieldDefinition
+from bitschema.models import IntFieldDefinition, BoolFieldDefinition, EnumFieldDefinition, BitmaskFieldDefinition
 
 
 def test_json_file_to_output_schema():
@@ -219,3 +220,137 @@ def test_64_bit_exact_boundary():
     # Should generate output successfully
     output = generate_output_schema(schema, layouts, total_bits)
     assert output["total_bits"] == 64
+
+
+def test_e2e_user_profile_schema_encode_decode():
+    """
+    Complete E2E test: Schema definition → Layout → Encode → Decode
+
+    Demonstrates realistic user profile with:
+    - Integer field (age)
+    - Enum field (subscription tier)
+    - Boolean flags (active, verified)
+    - Bitmask field (permissions)
+    """
+    # Step 1: Define schema programmatically
+    schema = BitSchema(
+        version="1",
+        name="UserProfile",
+        fields={
+            "age": IntFieldDefinition(type="int", bits=7, min=0, max=120),
+            "tier": EnumFieldDefinition(
+                type="enum",
+                values=["free", "basic", "premium", "enterprise"]
+            ),
+            "active": BoolFieldDefinition(type="bool"),
+            "verified": BoolFieldDefinition(type="bool"),
+            "permissions": BitmaskFieldDefinition(
+                type="bitmask",
+                flags={
+                    "can_read": 0,
+                    "can_write": 1,
+                    "can_delete": 2,
+                    "can_admin": 3,
+                }
+            ),
+        }
+    )
+
+    # Step 2: Convert to layout format and compute bit layout
+    fields_dict = [
+        {"name": "age", "type": "integer", "min": 0, "max": 120},
+        {"name": "tier", "type": "enum", "values": ["free", "basic", "premium", "enterprise"]},
+        {"name": "active", "type": "boolean"},
+        {"name": "verified", "type": "boolean"},
+        {
+            "name": "permissions",
+            "type": "bitmask",
+            "flags": {
+                "can_read": 0,
+                "can_write": 1,
+                "can_delete": 2,
+                "can_admin": 3,
+            }
+        },
+    ]
+
+    layouts, total_bits = compute_bit_layout(fields_dict)
+
+    # Verify layout is valid
+    assert total_bits > 0
+    assert total_bits <= 64  # Must fit in 64-bit integer
+    assert len(layouts) == 5  # All 5 fields have layouts
+
+    # Step 3: Generate output schema
+    output = generate_output_schema(schema, layouts, total_bits)
+    assert output["version"] == "1"
+    assert output["total_bits"] == total_bits
+    assert len(output["fields"]) == 5
+
+    # Step 4: Encode user data
+    user_data = {
+        "age": 25,
+        "tier": "premium",  # Index 2 in enum
+        "active": True,
+        "verified": True,
+        "permissions": {
+            "can_read": True,
+            "can_write": True,
+            "can_delete": False,
+            "can_admin": False,
+        }
+    }
+
+    encoded = encode(user_data, layouts)
+    assert isinstance(encoded, int)
+    assert encoded >= 0
+    assert encoded < 2**64  # Fits in 64-bit integer
+
+    # Step 5: Decode back to original data
+    decoded = decode(encoded, layouts)
+    assert decoded == user_data
+
+    # Step 6: Test different user profiles (round-trip verification)
+    test_cases = [
+        # Young free user, no permissions
+        {
+            "age": 18,
+            "tier": "free",
+            "active": True,
+            "verified": False,
+            "permissions": {"can_read": True, "can_write": False, "can_delete": False, "can_admin": False}
+        },
+        # Enterprise admin user
+        {
+            "age": 45,
+            "tier": "enterprise",
+            "active": True,
+            "verified": True,
+            "permissions": {"can_read": True, "can_write": True, "can_delete": True, "can_admin": True}
+        },
+        # Inactive basic user
+        {
+            "age": 32,
+            "tier": "basic",
+            "active": False,
+            "verified": True,
+            "permissions": {"can_read": True, "can_write": True, "can_delete": False, "can_admin": False}
+        },
+        # Edge case: max age
+        {
+            "age": 120,
+            "tier": "premium",
+            "active": True,
+            "verified": True,
+            "permissions": {"can_read": True, "can_write": False, "can_delete": False, "can_admin": False}
+        },
+    ]
+
+    for test_user in test_cases:
+        encoded_test = encode(test_user, layouts)
+        decoded_test = decode(encoded_test, layouts)
+        assert decoded_test == test_user, f"Round-trip failed for {test_user}"
+
+    # Step 7: Verify each encoded value is unique
+    encoded_values = [encode(user, layouts) for user in test_cases]
+    assert len(encoded_values) == len(set(encoded_values)), "Different users should encode to different integers"
