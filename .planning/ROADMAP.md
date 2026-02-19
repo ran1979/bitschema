@@ -67,12 +67,13 @@ Plans:
   3. Generated encode/decode methods produce identical results to runtime encoding
   4. Generated code is readable with clear formatting and helpful docstrings
   5. Bit layout visualization shows exact bit positions for all fields in human-readable format
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Dataclass code generation with encode/decode methods (TDD)
-- [ ] 03-02-PLAN.md — JSON Schema Draft 2020-12 export (TDD)
-- [ ] 03-03-PLAN.md — Bit layout visualization tables (TDD)
+- [x] 03-01-PLAN.md — Dataclass code generation with encode/decode methods (TDD)
+- [x] 03-02-PLAN.md — JSON Schema Draft 2020-12 export (TDD)
+- [x] 03-03-PLAN.md — Bit layout visualization tables (TDD)
+- [ ] 03-04-PLAN.md — CLI wrapper with argparse subcommands (gap closure)
 
 ### Phase 4: Testing & Advanced Types
 **Goal**: Library has comprehensive test coverage and supports advanced field types
