@@ -100,6 +100,13 @@ def compute_field_bits(field: dict) -> int:
         # Return bits needed to represent range
         return (total_units - 1).bit_length() if total_units > 0 else 0
 
+    elif field_type == "bitmask":
+        flags = field["flags"]
+        if not flags:
+            raise SchemaError("bitmask must have at least one flag")
+        max_position = max(flags.values())
+        return max_position + 1
+
     else:
         raise SchemaError(f"Unknown field type: {field_type}")
 
@@ -172,6 +179,8 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
                 "max_date": field["max_date"],
                 "resolution": field["resolution"]
             }
+        elif field["type"] == "bitmask":
+            constraints = {"flags": field["flags"]}
 
         # Create layout with current offset
         layout = FieldLayout(

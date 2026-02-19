@@ -174,8 +174,47 @@ class DateFieldDefinition(BaseModel):
         return self
 
 
+class BitmaskFieldDefinition(BaseModel):
+    """Bitmask field definition for storing multiple boolean flags.
+
+    Attributes:
+        type: Must be "bitmask"
+        flags: Dictionary mapping flag names to bit positions (0-63)
+        nullable: Whether field can be null (adds presence bit)
+        description: Optional field description
+    """
+
+    type: Literal["bitmask"] = "bitmask"
+    flags: dict[str, int] = Field(description="Flag names to bit positions (0-63)")
+    nullable: bool = Field(default=False, description="Allow null values")
+    description: str | None = Field(default=None, description="Field description")
+
+    @field_validator("flags")
+    @classmethod
+    def validate_flags(cls, v: dict[str, int]) -> dict[str, int]:
+        """Validate flag definitions."""
+        if not v:
+            raise ValueError("bitmask must have at least one flag")
+
+        # Check unique positions
+        positions = list(v.values())
+        if len(set(positions)) != len(positions):
+            raise ValueError("flag positions must be unique")
+
+        # Check 0-63 range
+        if any(pos < 0 or pos > 63 for pos in positions):
+            raise ValueError("flag positions must be 0-63 for 64-bit limit")
+
+        # Check valid Python identifiers
+        for name in v.keys():
+            if not name.isidentifier():
+                raise ValueError(f"flag name '{name}' must be valid Python identifier")
+
+        return v
+
+
 # Union type for all field definitions
-FieldDefinition = IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition
+FieldDefinition = IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition | BitmaskFieldDefinition
 
 
 class BitSchema(BaseModel):
@@ -189,7 +228,7 @@ class BitSchema(BaseModel):
 
     version: Literal["1"] = "1"
     name: Annotated[str, Field(min_length=1, pattern=r'^[A-Za-z_][A-Za-z0-9_]*$')]
-    fields: dict[str, IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition]
+    fields: dict[str, IntFieldDefinition | BoolFieldDefinition | EnumFieldDefinition | DateFieldDefinition | BitmaskFieldDefinition]
 
     @field_validator("name")
     @classmethod
@@ -237,6 +276,10 @@ class BitSchema(BaseModel):
                 elif field_def.resolution == "second":
                     total_units = int((max_dt - min_dt).total_seconds())
                 total_bits += (total_units - 1).bit_length() if total_units > 0 else 0
+            elif isinstance(field_def, BitmaskFieldDefinition):
+                # Bitmask bits = max(flag_positions) + 1
+                max_position = max(field_def.flags.values())
+                total_bits += max_position + 1
 
             # Add presence bit if nullable
             if field_def.nullable:
@@ -273,6 +316,10 @@ class BitSchema(BaseModel):
                 elif field_def.resolution == "second":
                     total_units = int((max_dt - min_dt).total_seconds())
                 total += (total_units - 1).bit_length() if total_units > 0 else 0
+            elif isinstance(field_def, BitmaskFieldDefinition):
+                # Bitmask bits = max(flag_positions) + 1
+                max_position = max(field_def.flags.values())
+                total += max_position + 1
 
             if field_def.nullable:
                 total += 1

@@ -84,6 +84,20 @@ def normalize_value(value: Any, layout: FieldLayout) -> int:
 
         return offset
 
+    elif layout.type == "bitmask":
+        flags_def = layout.constraints["flags"]
+
+        # value should be dict of flag_name -> bool
+        if not isinstance(value, dict):
+            raise ValueError(f"bitmask value must be dict, got {type(value).__name__}")
+
+        result = 0
+        for flag_name, flag_position in flags_def.items():
+            if value.get(flag_name, False):  # Default to False if not specified
+                result |= (1 << flag_position)
+
+        return result
+
     else:
         raise ValueError(f"Unknown field type: {layout.type}")
 

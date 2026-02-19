@@ -76,6 +76,15 @@ def denormalize_value(extracted: int, layout: FieldLayout) -> Any:
 
         return result
 
+    elif layout.type == "bitmask":
+        flags_def = layout.constraints["flags"]
+
+        result = {}
+        for flag_name, flag_position in flags_def.items():
+            result[flag_name] = bool(extracted & (1 << flag_position))
+
+        return result
+
     else:
         # Should never happen if layout is valid
         raise ValueError(f"Unknown field type: {layout.type}")
