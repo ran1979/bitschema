@@ -18,10 +18,11 @@ class FieldLayout(NamedTuple):
         offset: Starting bit position (0-indexed from LSB)
         bits: Number of bits allocated for this field
         constraints: Type-specific constraints (min/max for integer, values for enum)
+        nullable: Whether field can be null (presence bit included in bits count)
 
     Example:
         FieldLayout(name="age", type="integer", offset=0, bits=7,
-                    constraints={"min": 0, "max": 100})
+                    constraints={"min": 0, "max": 100}, nullable=False)
     """
 
     name: str
@@ -29,6 +30,7 @@ class FieldLayout(NamedTuple):
     offset: int
     bits: int
     constraints: dict
+    nullable: bool = False
 
 
 def compute_field_bits(field: dict) -> int:
@@ -101,9 +103,10 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
     Algorithm:
         1. Initialize offset = 0
         2. For each field in declaration order:
-           a. Compute required bits
-           b. Create FieldLayout with current offset
-           c. Increment offset by field bits
+           a. Compute required bits for value
+           b. Add 1 bit if field is nullable (presence tracking)
+           c. Create FieldLayout with current offset
+           d. Increment offset by field bits
         3. Validate total <= 64 bits
         4. Return layouts and total
 
@@ -114,10 +117,10 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
         ... ]
         >>> layouts, total = compute_bit_layout(fields)
         >>> layouts[0]
-        FieldLayout(name='active', type='boolean', offset=0, bits=1, constraints={})
+        FieldLayout(name='active', type='boolean', offset=0, bits=1, constraints={}, nullable=False)
         >>> layouts[1]
         FieldLayout(name='age', type='integer', offset=1, bits=7,
-                    constraints={'min': 0, 'max': 127})
+                    constraints={'min': 0, 'max': 127}, nullable=False)
         >>> total
         8
     """
@@ -126,8 +129,15 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
 
     # Compute layout for each field in order
     for field in fields:
-        # Compute required bits for this field
+        # Compute required bits for value
         bits = compute_field_bits(field)
+
+        # Check if field is nullable (default to False if not specified)
+        nullable = field.get("nullable", False)
+
+        # Add presence bit for nullable fields
+        if nullable:
+            bits += 1
 
         # Extract constraints based on type
         constraints = {}
@@ -143,6 +153,7 @@ def compute_bit_layout(fields: list[dict]) -> tuple[list[FieldLayout], int]:
             offset=offset,
             bits=bits,
             constraints=constraints,
+            nullable=nullable,
         )
 
         layouts.append(layout)
