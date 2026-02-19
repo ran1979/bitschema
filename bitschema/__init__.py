@@ -39,6 +39,18 @@ from .encoder import encode, normalize_value
 # Decoding
 from .decoder import decode, denormalize_value
 
+# JSON Schema export
+from .jsonschema import generate_json_schema
+
+# Visualization
+from .visualization import (
+    visualize_bit_layout,
+    visualize_bit_layout_ascii,
+    visualize_bit_layout_markdown,
+    format_bit_range,
+    format_constraints,
+)
+
 # Exceptions
 from .errors import ValidationError, SchemaError, EncodingError
 
@@ -74,6 +86,14 @@ __all__ = [
     # Decoding
     "decode",
     "denormalize_value",
+    # JSON Schema export
+    "generate_json_schema",
+    # Visualization
+    "visualize_bit_layout",
+    "visualize_bit_layout_ascii",
+    "visualize_bit_layout_markdown",
+    "format_bit_range",
+    "format_constraints",
     # Exceptions
     "ValidationError",
     "SchemaError",
