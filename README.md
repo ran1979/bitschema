@@ -314,3 +314,5 @@ Built with:
 
 **Made with ❤️ using test-driven development.**
 *356 tests • 10,042 lines of Python • 5 hours from start to ship*
+
+<!-- achievements: pr 1 -->
